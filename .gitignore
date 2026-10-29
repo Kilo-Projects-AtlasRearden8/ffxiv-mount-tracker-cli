@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.venv/
+venv/
+.env
+*.log
+ffxiv_mount_tracker.egg-info/
+dist/
+build/
+*.json
