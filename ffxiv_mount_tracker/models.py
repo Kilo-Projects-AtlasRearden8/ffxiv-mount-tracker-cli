@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import date, datetime
 from enum import Enum
-from typing import Any, Dict
+from typing import Any
 
 
 class Rarity(str, Enum):
@@ -47,7 +47,7 @@ class Mount:
         """ISO-8601 string representation of the acquisition date."""
         return self.acquisition_date.isoformat()
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "name": self.name,
             "source": self.source,
@@ -56,7 +56,7 @@ class Mount:
         }
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "Mount":
+    def from_dict(cls, data: dict[str, Any]) -> Mount:
         return cls(
             name=str(data["name"]),
             source=str(data["source"]),

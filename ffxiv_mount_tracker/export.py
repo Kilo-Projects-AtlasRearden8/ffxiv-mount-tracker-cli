@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import csv
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 from ffxiv_mount_tracker.models import MOUNT_FIELD_ORDER, Mount
 

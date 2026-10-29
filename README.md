@@ -1,75 +1,154 @@
 # FFXIV Mount Tracker CLI
 
-A Python command-line tool for Final Fantasy XIV players to log their collected
-mounts, recording each mount's name, source, rarity, and acquisition date.
-Data is stored locally as JSON, and collections can be exported to CSV.
+A friendly Python command-line tool for Final Fantasy XIV players to log the
+mounts they've collected. For each mount, you record its name, where you got
+it (source), how rare it is (rarity), and the date you picked it up. Your
+collection is saved to a small JSON file on your own computer, and you can
+export it to a CSV spreadsheet whenever you like.
 
 This is a fan project. No Square Enix game assets are included or distributed.
 
 ## About Asdale Dynamics, LLC
 
-Built by [Asdale Dynamics, LLC](https://dylanasdale.github.io) — Indiana,
-formed October 2026 — founded by Dylan Asdale, a registered nurse turned AI
-author. Asdale Dynamics focuses on beginner-friendly AI education, books and
-guides (including *The Massive AI Manual*), and practical open-source tools that
-the LLC can publish or sell. This CLI follows the LLC's style: clear, warm,
-polished, tested, local-first, and free of secrets or personal data.
+Built by [Asdale Dynamics, LLC](https://dylanasdale.github.io) — an Indiana
+company formed in October 2026 — founded by Dylan Asdale, a registered nurse
+turned AI author. Dylan wrote *The Massive AI Manual* and runs the hub site
+dylanasdale.github.io, where he explains AI "like a friend would": plain
+English, step by step, never condescending.
+
+Asdale Dynamics focuses on beginner-friendly AI education, books and guides,
+and practical open-source tools the LLC can publish or sell. This CLI follows
+that same spirit: clear, warm, tested, local-first, and free of secrets or
+personal data.
+
+## Is this for me?
+
+Yes, if you:
+
+- Play FFXIV and want a simple place to track your mount collection
+- Prefer keeping your data on your own computer (not in someone's cloud)
+- Want something you can run without creating accounts or API keys
+
+No programming experience required. If you can copy and paste a command, you
+can use this tool.
 
 ## Features
 
-- Add, list, remove, and export mount records
-- Track mount name, source, rarity, and acquisition date
-- Local JSON storage (default: `~/.local/share/ffxiv-mount-tracker/mounts.json`,
-  or set `FFXIV_MOUNT_TRACKER_DATA`)
-- CSV export of your full collection
-- Duplicate detection by mount name (case-insensitive)
-- Filter listings by source or rarity
-- No network calls, no API keys, no game assets
+- **Add** a mount with name, source, rarity, and acquisition date
+- **List** your whole collection in a tidy table
+- **Filter** by source (like "Gold Saucer") or rarity (like "Rare"), or both at once
+- **Update** a mount's details if something changes
+- **Remove** a mount you no longer want tracked
+- **Export** your collection to a CSV file you can open in Excel, Google Sheets,
+  or Numbers
+- **Duplicate detection** — adding the same mount twice is blocked (matches are
+  case-insensitive)
+- **Local-first** — everything lives in a JSON file on your machine. No network
+  calls, no API keys, no game assets.
 
 ## Installation
 
-From this repository folder:
+Open your terminal in this project folder and run:
 
 ```bash
 python3 -m pip install -e .
 ```
 
-This installs the `ffxiv-mount-tracker` console script.
+You may see a message about "externally managed environments." If so, add
+`--break-system-packages` to the command:
+
+```bash
+python3 -m pip install -e . --break-system-packages
+```
+
+That installs the `ffxiv-mount-tracker` command so you can run it from anywhere.
 
 ## Usage
 
+### Add a mount
+
 ```bash
-# Add a mount
 ffxiv-mount-tracker add "Azure Drake" "The Final Coil of Bahamut" Rare 2024-01-15
+```
 
-# List all mounts
+The pieces, in order:
+
+1. Mount name — `"Azure Drake"`
+2. Source — where you got it — `"The Final Coil of Bahamut"`
+3. Rarity — `Common`, `Uncommon`, `Rare`, or `Legendary`
+4. Acquisition date — `YYYY-MM-DD` — `2024-01-15`
+
+### List your mounts
+
+```bash
 ffxiv-mount-tracker list
+```
 
-# List mounts from a specific source
+Filter by source:
+
+```bash
 ffxiv-mount-tracker list --source "Gold Saucer"
+```
 
-# List mounts by rarity
+Filter by rarity:
+
+```bash
 ffxiv-mount-tracker list --rarity Rare
+```
 
-# Remove a mount
+Filter by both at once:
+
+```bash
+ffxiv-mount-tracker list --source "Gold Saucer" --rarity Common
+```
+
+### Update a mount
+
+Got a detail wrong? Update just the fields you want to change:
+
+```bash
+ffxiv-mount-tracker update "Azure Drake" --rarity Common
+```
+
+You can update `--source`, `--rarity`, and `--acquisition-date` (YYYY-MM-DD).
+
+### Remove a mount
+
+```bash
 ffxiv-mount-tracker remove "Azure Drake"
+```
 
-# Export collection to CSV
+### Export to CSV
+
+```bash
 ffxiv-mount-tracker export my_mounts.csv
 ```
 
-You can also run the package directly:
+This writes every tracked mount to `my_mounts.csv`, which you can open in any
+spreadsheet app.
+
+### Run without installing
+
+You can also run the tool straight from the project folder:
 
 ```bash
 python3 -m ffxiv_mount_tracker list
 ```
 
-Rarity values: `Common`, `Uncommon`, `Rare`, `Legendary`. Dates use
-`YYYY-MM-DD` format.
+## Where your data lives
+
+By default, your mounts are stored here:
+
+```
+~/.local/share/ffxiv-mount-tracker/mounts.json
+```
+
+You can put the file somewhere else with the `--data` option, or by setting
+the `FFXIV_MOUNT_TRACKER_DATA` environment variable.
 
 ## Development
 
-Run the test suite:
+Run the test suite from the project folder:
 
 ```bash
 python3 -m pytest

@@ -82,6 +82,46 @@ def test_store_remove_missing_raises(tmp_path) -> None:
         store.remove("Nonexistent")
 
 
+def test_get_and_remove_are_whitespace_insensitive(tmp_path) -> None:
+    store = MountStore(tmp_path / "mounts.json")
+    store.add(_mount("Azure Drake", "Quest"))
+    assert store.get("  azure   drake  ") is not None
+    removed = store.remove("AZURE DRAKE")
+    assert removed.name == "Azure Drake"
+    assert store.get("Azure Drake") is None
+
+
+def test_store_update_changes_fields(tmp_path) -> None:
+    store = MountStore(tmp_path / "mounts.json")
+    store.add(_mount("Azure Drake", "Quest", Rarity.RARE, 1))
+    store.update(
+        "Azure Drake", source="FATE", rarity=Rarity.LEGENDARY,
+        acquisition_date=date(2024, 2, 2),
+    )
+    mount = store.get("Azure Drake")
+    assert mount is not None
+    assert mount.name == "Azure Drake"
+    assert mount.source == "FATE"
+    assert mount.rarity == Rarity.LEGENDARY
+    assert mount.acquisition_date == date(2024, 2, 2)
+
+
+def test_store_update_partial_fields_keeps_others(tmp_path) -> None:
+    store = MountStore(tmp_path / "mounts.json")
+    store.add(_mount("Azure Drake", "Quest", Rarity.RARE, 1))
+    store.update("Azure Drake", rarity=Rarity.COMMON)
+    mount = store.get("Azure Drake")
+    assert mount is not None
+    assert mount.source == "Quest"
+    assert mount.rarity == Rarity.COMMON
+    assert mount.acquisition_date == date(2024, 1, 1)
+
+
+def test_store_update_missing_returns_none(tmp_path) -> None:
+    store = MountStore(tmp_path / "mounts.json")
+    assert store.update("Ghost", source="Nowhere") is None
+
+
 # ---- Store set logic: filtering (source / rarity) ----
 
 def test_filter_by_source(tmp_path) -> None:
@@ -100,6 +140,18 @@ def test_filter_by_rarity(tmp_path) -> None:
     store.add(_mount("Minion Bat", "Achievement", Rarity.RARE))
     rare = store.filter_by_rarity(Rarity.RARE)
     assert {m.name for m in rare} == {"Azure Drake", "Minion Bat"}
+
+
+def test_combined_source_and_rarity_filter(tmp_path) -> None:
+    store = MountStore(tmp_path / "mounts.json")
+    store.add(_mount("Azure Drake", "The Final Coil of Bahamut", Rarity.RARE))
+    store.add(_mount("Bahamut's Horn", "the final coil of bahamut", Rarity.LEGENDARY))
+    store.add(_mount("Cloud Manta", "Gold Saucer", Rarity.RARE))
+    results = store.filter_by_source(
+        "The Final Coil of Bahamut",
+        store.filter_by_rarity(Rarity.RARE),
+    )
+    assert {m.name for m in results} == {"Azure Drake"}
 
 
 # ---- Store set logic: set-style operations on names ----
